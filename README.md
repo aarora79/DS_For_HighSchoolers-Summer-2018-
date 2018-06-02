@@ -1,6 +1,6 @@
 # Data Science For High Schoolers (Summer 2018)
 
-This is the github repo for the "data science for high schoolers" course, a set of 6 classes meant to provide an introduction to data science to high school students. 
+This is the github repo for the "data science for high schoolers" course, a set of 8 classes meant to provide an introduction to data science to high school students. 
 
 High school students are uniquely qualified to be introduced to data science as an adjunct to what they study in math, statistics and computer programming. We focus on the basics and try to build an understanding of the concepts (rather than the hype). Everyone is encouraged (expected) to pick a simple dataset from their area of interest and replicate what we cover in class on their own dataset.
 
