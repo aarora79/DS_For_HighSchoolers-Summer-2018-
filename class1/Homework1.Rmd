@@ -1,0 +1,47 @@
+---
+title: "Homework 1"
+author: "Data science for high shcool students, Summer 2018"
+date:  "`r format(Sys.time(), '%d %B, %Y')`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1. Run the code in airnow.R
+
+This is an excercise to run the R code already provided in airnow.R. You would need to create an AirNow account from https://docs.airnowapi.org/account/request/ and then get an API key.
+
+Set the API Key into an *environment variable* (read more here https://en.wikipedia.org/wiki/Environment_variable) using the Sys.setenv function. See help for Sys.setenv by typing *?Sys.setenv* on the R Console in R Studio.
+
+If you are able to run the code successfully you would be able to see the chart generated using the ggplot2 package.
+
+## 2. Basic operations with data frames
+
+See code below and try to write the code as indicated in the comment lines.
+
+```{r}
+# create a data frame 
+people = data.frame(name = c("person1", "person2", "person3"), age = c(10, 20, 30))
+
+# print the dataframe
+
+
+# load the purrr package
+
+# use the "map2" function to print the dataframe with each entry written as
+# name is person1, age is 10
+
+
+# print a summary of the people dataframe, use the "summary" function
+# lookup help of the "summary" function to see usage example
+
+```
+
+
+
+
+## 3 Doing more with the AirNow API example
+
+We will discuss this in the class today. We want to write code to get AQI data fro the last one week and plot it.
