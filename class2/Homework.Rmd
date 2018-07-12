@@ -1,0 +1,18 @@
+---
+title: "Homework 2"
+author: "Data science for high shcool students, Summer 2018"
+date:  "`r format(Sys.time(), '%d %B, %Y')`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1. R Markdown example
+
+Create an R Markdown file for the code in HW1 Problem 3. The aim of this excercise to create a simple one page report which has a few lines of text about AQI values in zipcode 20871 (or another of of your choice), a table showing the AQI values by date and a plot (same as in HW1 Problem 3).
+
+1. Set the 'echo=F' in the R section so that code is not displayed in the rendered pdf.
+
+## 2. Problem 2 [coming soon...]
