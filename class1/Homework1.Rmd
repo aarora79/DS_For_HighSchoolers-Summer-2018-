@@ -44,4 +44,8 @@ people = data.frame(name = c("person1", "person2", "person3"), age = c(10, 20, 3
 
 ## 3 Doing more with the AirNow API example
 
-We will discuss this in the class today. We want to write code to get AQI data fro the last one week and plot it.
+Use the code in airnow.R example to get data for the last 1 week and plot it. To get the data for previous days you would need to set the "date=" in the URL to a previous date. This would require a "loop" construct but we do not want to use a for loop, we want to do this with a map. There are multiple ways to do this with the map family of functions but a rather simple way is to use map and make it iterate it over an vector of indices from say 1 to 7.
+
+You would also need to use the "head" function to get the data for the day you are interested in.
+
+
