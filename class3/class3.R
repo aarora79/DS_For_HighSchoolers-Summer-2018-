@@ -1,6 +1,8 @@
 library(dplyr)
 library(purrr)
 library(ggplot2)
+library(tidyr)
+library(tidyverse)
 
 # read the dataset
 youth = read_csv("youth.csv")
