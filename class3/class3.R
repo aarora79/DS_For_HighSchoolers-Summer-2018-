@@ -4,6 +4,7 @@ library(ggplot2)
 library(tidyr)
 library(tidyverse)
 
+
 # read the dataset
 youth = read_csv("youth.csv")
 
@@ -17,26 +18,55 @@ View(youth)
 # this is a dscrete version of the distribution
 summary(youth$`Height (inches)`)
 NUM_BINS <- 30
+
 youth$height_binned <- cut(youth$`Height (inches)`, breaks = NUM_BINS)
 View(youth)
 
 youth %>%
-  ggplot(aes(x = factor(height_binned)))+
+  ggplot(aes(x = height_binned))+
   geom_bar(stat="count", width=0.7, fill="steelblue")+
-  theme_minimal()
+  theme_bw()
 
 # plot a histogram of the height field
 youth %>%
-  ggplot(aes(x=`Height (inches)`)) + 
-  geom_histogram(aes(fill=I("white"), col=I("black"))) + 
+  ggplot(aes(x=`Height (inches)`)) +
+  geom_histogram(aes(fill=I("white"), col=I("black"))) +
   theme_minimal()
 
 # now a density plot
 # this is a continous version of the distribution
 youth %>%
   ggplot(aes(`Height (inches)`)) +
-  geom_density(alpha = 0.1, fill = I("blue")) + 
+  geom_density(alpha = 0.1, fill = I("blue")) +
   theme_minimal()
 
-hist(youth$`Height (inches)`, breaks=30)
-plot(density(youth$`Height (inches)`))
+height <- youth$`Height (inches)`
+count <- length(height)
+
+
+sample_means <- unlist(map(1:10^2, function(x)   mean(height[sample(count, 100)]) ))
+mean(sample_means)
+plot(density(sample_means))
+
+
+# create a glm model
+df = youth %>%
+  rename(gender = Gender, age=Age, height=`Height (inches)`, weight=`Weight (lbs)`) %>%
+  select(gender, age, height, weight)
+
+library(GGally)
+ggscatmat(df, columns = 2:4, color="gender", alpha=0.8) +
+  ggtitle("Correlation in various elements of the youth dataset") + 
+  theme(axis.text.x = element_text(angle=-40, vjust=1, hjust=0, size=10))
+
+
+library(glmnet)
+fit <- glm(as.factor(gender)~age+height+weight,data=df,family=binomial())
+summary(fit) # display results
+confint(fit) # 95% CI for the coefficients
+fit
+probs <- predict(fit, type="response") # predicted values
+gender_predicted <- ifelse(probs > 0.5, "Male", "Female")
+accuracy = mean(gender_predicted == df$gender)
+accuracy
+table(gender_predicted, df$gender)
