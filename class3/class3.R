@@ -43,8 +43,10 @@ youth %>%
 height <- youth$`Height (inches)`
 count <- length(height)
 
-
-sample_means <- unlist(map(1:10^2, function(x)   mean(height[sample(count, 100)]) ))
+population_mean <- mean(height)
+# 67.05399
+N <- 100000
+sample_means <- unlist(map(1:N, function(x)   mean(height[sample(count, 100)]) ))
 mean(sample_means)
 plot(density(sample_means))
 
@@ -53,6 +55,7 @@ plot(density(sample_means))
 df = youth %>%
   rename(gender = Gender, age=Age, height=`Height (inches)`, weight=`Weight (lbs)`) %>%
   select(gender, age, height, weight)
+View(df)
 
 library(GGally)
 ggscatmat(df, columns = 2:4, color="gender", alpha=0.8) +
@@ -61,12 +64,15 @@ ggscatmat(df, columns = 2:4, color="gender", alpha=0.8) +
 
 
 library(glmnet)
-fit <- glm(as.factor(gender)~age+height+weight,data=df,family=binomial())
+fit <- glm(as.factor(gender) ~ age+height+weight, data = df, family=binomial())
+fit
 summary(fit) # display results
 confint(fit) # 95% CI for the coefficients
-fit
+
 probs <- predict(fit, type="response") # predicted values
 gender_predicted <- ifelse(probs > 0.5, "Male", "Female")
 accuracy = mean(gender_predicted == df$gender)
 accuracy
 table(gender_predicted, df$gender)
+
+table(df$gender)/count
