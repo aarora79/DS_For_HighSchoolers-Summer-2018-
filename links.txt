@@ -1,2 +1,2 @@
 https://sebastianraschka.com/faq/docs/closed-form-vs-gd.html
-https://sebastianraschka.com/faq/docs/closed-form-vs-gd.html
+http://christiansch.github.io/machine-learning-cheat-sheet/index.html
