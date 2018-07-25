@@ -22,6 +22,8 @@ NUM_BINS <- 30
 youth$height_binned <- cut(youth$`Height (inches)`, breaks = NUM_BINS)
 View(youth)
 
+
+
 youth %>%
   ggplot(aes(x = height_binned))+
   geom_bar(stat="count", width=0.7, fill="steelblue")+
@@ -76,3 +78,80 @@ accuracy
 table(gender_predicted, df$gender)
 
 table(df$gender)/count
+
+
+# train test split
+# Split test/training sets
+set.seed(100)
+require(rsample)
+train_test_split <- initial_split(df, prop = 0.8)
+train_test_split
+
+# Retrieve train and test sets
+train_tbl <- training(train_test_split)
+test_tbl  <- testing(train_test_split)
+
+fit <- glm(as.factor(gender) ~ age+height+weight, data = train_tbl, family=binomial())
+fit
+summary(fit) # display results
+confint(fit) # 95% CI for the coefficients
+
+probs <- predict(fit, type="response") # predicted values
+gender_predicted <- ifelse(probs > 0.5, "Male", "Female")
+accuracy = mean(gender_predicted == train_tbl$gender)
+accuracy
+table(gender_predicted, train_tbl$gender)
+
+probs <- predict(fit, test_tbl, type="response") # predicted values
+gender_predicted <- ifelse(probs > 0.5, "Male", "Female")
+accuracy = mean(gender_predicted == test_tbl$gender)
+accuracy
+table(gender_predicted, test_tbl$gender)
+
+# randomforest
+library(randomForest)
+youth.rf=randomForest(as.factor(gender) ~ . , data = train_tbl, 
+                      importance=TRUE, 
+                      ntree=2000)
+youth.rf
+
+plot(youth.rf)
+
+varImpPlot(youth.rf)
+
+prediction <- predict(youth.rf, test_tbl)
+mean(prediction == test_tbl$gender)
+
+
+# add another feature
+df = youth %>%df
+  rename(gender = Gender, age=Age, height=`Height (inches)`, weight=`Weight (lbs)`,
+         describe_wt = `How would you describe your weight?`) %>%
+  select(gender, age, height, weight, describe_wt)
+View(df)
+
+
+df <- df %>%
+  filter(!is.na(describe_wt)) %>%
+  mutate(describe_wt = as.numeric(as.factor(describe_wt)))
+  
+
+train_test_split <- initial_split(df, prop = 0.8)
+train_test_split
+
+# Retrieve train and test sets
+train_tbl <- training(train_test_split)
+test_tbl  <- testing(train_test_split)
+
+youth.rf=randomForest(as.factor(gender) ~ . , data = train_tbl, 
+                      importance=TRUE, 
+                      ntree=2000)
+youth.rf
+
+plot(youth.rf)
+
+varImpPlot(youth.rf)
+
+prediction <- predict(youth.rf, test_tbl)
+mean(prediction == test_tbl$gender)
+
