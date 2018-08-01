@@ -4,6 +4,8 @@ library(tidyverse)
 library(leaflet)
 library(viridis)
 library(lubridate)
+library(zoo)
+library(tidyquant)
 
 # read the dataset
 crime = read_csv("Crime.csv")
@@ -52,14 +54,23 @@ top_n_city_names <- cities$City
 
 cities <- crime %>%
   filter(City %in% top_n_city_names) %>%
-  mutate(dispatch_dttime = mdy_hm(`Dispatch Date/Time`))
+  mutate(dispatch_dttime = mdy_hm(`Dispatch Date/Time`)) %>%
+  mutate(dispatch_year = year(dispatch_dttime),
+         dispatch_month = month(dispatch_dttime)) %>%
+  mutate(dispatch_year_mon = (paste0(dispatch_year, "-", dispatch_month, "-1"))) %>%
+  group_by(City, dispatch_year_mon, `Crime Name1`) %>%
+  summarize(count = n()) %>%
+  ungroup() %>%
+  mutate(dispatch_year_mon = as.yearmon(dispatch_year_mon))
   
 
 
 p = cities %>%
-  ggplot(aes(dispatch_dttime, count)) + geom_line(aes(col=Z_PQ_PROV_TECH)) +
-  ggtitle(paste0("Number of successful prequals per month")) +
+  ggplot(aes(dispatch_year_mon, count)) + geom_line(aes(col=`Crime Name1`)) +
+  ggtitle(paste0("Crimes in cities, a timeseries representation")) +
   xlab("") + ylab("Count") +
   theme_tq() +
-  theme(legend.title=element_blank())
+  theme(legend.title=element_blank()) +
+  scale_y_log10(limits=c(1,max(cities$count))) +
+  facet_wrap(~City)
 p
