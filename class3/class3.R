@@ -3,7 +3,7 @@ library(purrr)
 library(ggplot2)
 library(tidyr)
 library(tidyverse)
-
+library(GGally)
 
 # read the dataset
 youth = read_csv("youth.csv")
@@ -13,6 +13,15 @@ glimpse(youth)
 
 # another view
 View(youth)
+
+
+# plot features in pairs to explore their relationship
+# and put everything in a matrix (visually speaking)
+# to see the whole dataset together
+p <- ggpairs(data=youth[, c(1,2,3,4)], title="Youth survey data",
+             mapping=ggplot2::aes(colour = Gender))
+p
+
 
 # lets bin the data and plot a bar chart
 # this is a dscrete version of the distribution
@@ -61,7 +70,7 @@ View(df)
 
 library(GGally)
 ggscatmat(df, columns = 2:4, color="gender", alpha=0.8) +
-  ggtitle("Correlation in various elements of the youth dataset") + 
+  ggtitle("Correlation in various elements of the youth dataset") +
   theme(axis.text.x = element_text(angle=-40, vjust=1, hjust=0, size=10))
 
 
@@ -110,8 +119,8 @@ table(gender_predicted, test_tbl$gender)
 
 # randomforest
 library(randomForest)
-youth.rf=randomForest(as.factor(gender) ~ . , data = train_tbl, 
-                      importance=TRUE, 
+youth.rf=randomForest(as.factor(gender) ~ . , data = train_tbl,
+                      importance=TRUE,
                       ntree=2000)
 youth.rf
 
@@ -124,17 +133,17 @@ mean(prediction == test_tbl$gender)
 
 
 # add another feature
-df = youth %>%df
+df = youth %>%
   rename(gender = Gender, age=Age, height=`Height (inches)`, weight=`Weight (lbs)`,
          describe_wt = `How would you describe your weight?`) %>%
   select(gender, age, height, weight, describe_wt)
 View(df)
 
-
+nrow(df)
 df <- df %>%
-  filter(!is.na(describe_wt)) %>%
+  filter(is.na(describe_wt) == F) %>%
   mutate(describe_wt = as.numeric(as.factor(describe_wt)))
-  
+nrow(df)
 
 train_test_split <- initial_split(df, prop = 0.8)
 train_test_split
@@ -143,8 +152,8 @@ train_test_split
 train_tbl <- training(train_test_split)
 test_tbl  <- testing(train_test_split)
 
-youth.rf=randomForest(as.factor(gender) ~ . , data = train_tbl, 
-                      importance=TRUE, 
+youth.rf=randomForest(as.factor(gender) ~ . , data = train_tbl,
+                      importance=TRUE,
                       ntree=2000)
 youth.rf
 
