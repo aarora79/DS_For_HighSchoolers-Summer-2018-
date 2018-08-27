@@ -8,11 +8,11 @@ library(jsonlite)
 # api end point
 API <- "https://newsapi.org/v2/top-headlines?country=us&apiKey=__API_KEY__"
 
-
+a <-1
 # read the api key from the environment variable 
 # API key is storedin the environment variable by doing 
 # sometihng like
-# Sys.setenv(BBC_NEWS_API_KEY="eed8134a37b44bac8a4417f94a1e64f8") 
+# Sys.setenv(BBC_NEWS_API_KEY="eed8134a37b44bac8a4417f94a1e1a4f") 
 api_key <- Sys.getenv("BBC_NEWS_API_KEY")
 
 # replace the place holder in the api key with the actual value
@@ -24,8 +24,8 @@ flog.info("going to invoke the api now")
 resp <- GET(api_end_point)
 
 # we have the response
-resp_stats_code <- status_code(resp)
-if (resp_stats_code == 200) {
+resp_status_code <- status_code(resp)
+if (resp_status_code == 200) {
   flog.info("the API call successed, we have data from the bbc news api end point")
   news   <- fromJSON(content(resp, "text"))
   
@@ -53,6 +53,6 @@ if (resp_stats_code == 200) {
     theme_minimal()
   
 } else {
-  flog.error("the api call failed, status code is %d", resp_stats_code)
+  flog.error("the api call failed, status code is %d", resp_status_code)
 }
 
