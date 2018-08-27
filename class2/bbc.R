@@ -12,7 +12,7 @@ API <- "https://newsapi.org/v2/top-headlines?country=us&apiKey=__API_KEY__"
 # read the api key from the environment variable 
 # API key is storedin the environment variable by doing 
 # sometihng like
-# Sys.setenv(BBC_NEWS_API_KEY="eed8134a37b44bac8a4417f94a1e1a4f") 
+# Sys.setenv(BBC_NEWS_API_KEY="eed8134a37b44bac8a4417f94a1e64f8") 
 api_key <- Sys.getenv("BBC_NEWS_API_KEY")
 
 # replace the place holder in the api key with the actual value
