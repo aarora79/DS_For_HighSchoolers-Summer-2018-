@@ -34,34 +34,37 @@ View(youth)
 
 
 youth %>%
-  ggplot(aes(x = height_binned))+
+  ggplot(aes(x = height_binned)) +
   geom_bar(stat="count", width=0.7, fill="steelblue")+
   theme_bw()
 
 # plot a histogram of the height field
 youth %>%
   ggplot(aes(x=`Height (inches)`)) +
-  geom_histogram(aes(fill=I("white"), col=I("black"))) +
-  theme_minimal()
+  geom_histogram(aes(fill=I("steelblue"), col=I("black"))) +
+  theme_bw()
 
 # now a density plot
 # this is a continous version of the distribution
 youth %>%
   ggplot(aes(`Height (inches)`)) +
-  geom_density(alpha = 0.1, fill = I("blue")) +
-  theme_minimal()
+  geom_density(alpha = 0.1, fill = I("steelblue")) +
+  theme_bw()
 
 height <- youth$`Height (inches)`
 count <- length(height)
 
 population_mean <- mean(height)
+sample_mean <- mean(height[sample(count, 100)])
+sample_mean
 # 67.05399
-N <- 100000
-sample_means <- unlist(map(1:N, function(x)   mean(height[sample(count, 100)]) ))
+N <- 10000
+sample_means <- unlist(map(1:N, function(i)   mean(height[sample(count, 100)]) ))
 mean(sample_means)
 plot(density(sample_means))
+abline(v=population_mean, col='blue')
 
-
+table(youth$`How would you describe your weight?`)
 # create a glm model
 df = youth %>%
   rename(gender = Gender, age=Age, height=`Height (inches)`, weight=`Weight (lbs)`) %>%
@@ -75,13 +78,17 @@ ggscatmat(df, columns = 2:4, color="gender", alpha=0.8) +
 
 
 library(glmnet)
+#fit <- glm(as.factor(gender) ~ age+height+weight, data = df, family=binomial())
 fit <- glm(as.factor(gender) ~ age+height+weight, data = df, family=binomial())
+
 fit
 summary(fit) # display results
 confint(fit) # 95% CI for the coefficients
 
 probs <- predict(fit, type="response") # predicted values
 gender_predicted <- ifelse(probs > 0.5, "Male", "Female")
+
+sum(gender_predicted == df$gender)/count
 accuracy = mean(gender_predicted == df$gender)
 accuracy
 table(gender_predicted, df$gender)
@@ -92,7 +99,7 @@ table(df$gender)/count
 # train test split
 # Split test/training sets
 set.seed(100)
-require(rsample)
+library(rsample)
 train_test_split <- initial_split(df, prop = 0.8)
 train_test_split
 
@@ -117,9 +124,16 @@ accuracy = mean(gender_predicted == test_tbl$gender)
 accuracy
 table(gender_predicted, test_tbl$gender)
 
+
+plot(x=df$height, y=df$weight, col=ifelse(df$gender=="Male", "blue", "green"))
+library(scatterplot3d)
+
+scatterplot3d(x=df$height, y=df$weight, z=df$age, color=ifelse(df$gender=="Male", "blue", "green"))
+scatterplot3d(x=df$height, y=df$weight, z=df$age, color=ifelse(df$gender=="Male", "blue", "green"))
+
 # randomforest
 library(randomForest)
-youth.rf=randomForest(as.factor(gender) ~ . , data = train_tbl,
+youth.rf=randomForest(as.factor(gender) ~ height+weight , data = train_tbl,
                       importance=TRUE,
                       ntree=2000)
 youth.rf
@@ -141,7 +155,7 @@ View(df)
 
 nrow(df)
 df <- df %>%
-  filter(is.na(describe_wt) == F) %>%
+  filter(!is.na(describe_wt)) %>%
   mutate(describe_wt = as.numeric(as.factor(describe_wt)))
 nrow(df)
 
